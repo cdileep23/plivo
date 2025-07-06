@@ -156,16 +156,21 @@ export const updateServiceStatus = async (req, res) => {
       });
     }
 
+    // Save the previous status for reference
     const prevStatus = service.status;
     service.status = status;
     await service.save();
 
+    // Handle incidents based on the new status
     if (status === "Operational") {
+      // Resolve all open incidents for this service
       await Incident.updateMany(
         { serviceId, status: "open" },
         { $set: { status: "resolved" } }
       );
-    } else {
+    } else if (prevStatus === "Operational") {
+      // Only create new incident if service was previously operational
+      // Check if there are already open incidents
       const existingOpen = await Incident.findOne({
         serviceId,
         status: "open",
@@ -176,17 +181,24 @@ export const updateServiceStatus = async (req, res) => {
           serviceId,
           name: `Auto Incident - ${status}`,
           status: "open",
-          issueMessage: `Auto-generated incident due to status change to ${status}`,
+          issueMessage: `Auto-generated incident due to status change from Operational to ${status}`,
         });
       }
     }
 
-    // Broadcast update to all clients in this organization
-    const updatedServices = await getServicesWithIncidents(
+  
+    const updatedServicesData = await getServicesWithIncidents(
       service.organizationId
     );
-    io.to(service.organizationId).emit("update-services", {
-      services: updatedServices,
+
+    
+    console.log("Updated service status:", status);
+    console.log("Organization ID:", service.organizationId);
+    console.log("Services to emit:", updatedServicesData);
+
+   
+    io.to(service.organizationId.toString()).emit("update-services", {
+      services: updatedServicesData,
     });
 
     res.status(200).json({
@@ -199,7 +211,6 @@ export const updateServiceStatus = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
 export const deleteService = async (req, res) => {
   try {
     const { serviceId } = req.params;

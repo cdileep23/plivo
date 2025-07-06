@@ -15,7 +15,6 @@ export const requestCollaboration = async (req, res) => {
         .json({ success: false, message: "Organization not found" });
     }
 
-    // Prevent admin from requesting
     if (org.admin.toString() === userId) {
       return res
         .status(400)
@@ -66,7 +65,7 @@ export const requestCollaboration = async (req, res) => {
 export const respondToCollabRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
-    const { status } = req.body; // Accepted / Rejected
+    const { status } = req.body; 
     const adminId = req.user.id;
 
     const request = await CollabRequest.findById(requestId).populate(
@@ -99,7 +98,7 @@ export const respondToCollabRequest = async (req, res) => {
     await request.save();
 
     if (status === "Accepted") {
-      // Add user as collaborator if not already
+   
       if (!org.collaborators.includes(request.userId.toString())) {
         org.collaborators.push(request.userId);
         await org.save();
@@ -117,35 +116,43 @@ export const respondToCollabRequest = async (req, res) => {
   }
 };
 
-export const getRequestsByOrganization = async (req, res) => {
+export const getPendingAdminRequests = async (req, res) => {
   try {
-    const { orgId } = req.params;
-    const adminId = req.user.id;
+    const userId = req.user.id;
 
-    const org = await Organization.findById(orgId);
-    if (!org) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Organization not found" });
+    
+    if (req.user.role !== "Admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Only admins can view these requests",
+      });
     }
 
-    if (org.admin.toString() !== adminId) {
-      return res.status(403).json({ success: false, message: "Unauthorized" });
-    }
-
+   
     const requests = await CollabRequest.find({
-      organizationId: orgId,
-    }).populate("userId", "name email");
+      status: "pending", 
+    })
+      .populate("userId", "name email") 
+      .populate("organizationId", "name admin"); 
+
+    
+    const filteredRequests = requests.filter(
+      (request) => request.organizationId.admin.toString() !== userId
+    );
 
     return res.status(200).json({
       success: true,
-      requests,
+      requests: filteredRequests,
     });
   } catch (error) {
-    console.error("Get Requests Error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Get Admin Requests Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
+
 
 export const getMyRequests = async (req, res) => {
   try {

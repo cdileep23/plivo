@@ -9,6 +9,7 @@ import OrgRouter from './routes/organization.route.js'
 import ServiceRouter from "./routes/service.route.js";
 import IncidentRouter from './routes/incident.route.js'
 import { Server } from 'socket.io'
+import RequestRouter from './routes/collabreq.route.js'
 dotenv.config({})
 const app=express()
 app.use(cookieParser())
@@ -46,6 +47,7 @@ app.use('/api/v1/user', UserRouter)
 app.use("/api/v1/org", OrgRouter);
 app.use("/api/v1/service", ServiceRouter);
 app.use("/api/v1/incident", IncidentRouter);
+app.use("/api/v1/request", RequestRouter);
 
 const startServer=async()=>{
     const PORT=process.env.PORT

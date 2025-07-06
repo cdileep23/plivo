@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -42,6 +42,12 @@ const ServiceCard = ({
       toast.error("Delete failed");
     }
   };
+
+  useEffect(()=>{
+if(service){
+  setCurrentStatus(service.status)
+}
+  },[service])
 
   const handleStatusUpdate = async () => {
     setIsUpdatingStatus(true);

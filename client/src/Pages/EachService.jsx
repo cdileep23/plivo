@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { BASE_URL } from "@/utls/url";
 import ServiceCard from "./ServiceCard";
 import { io } from "socket.io-client";
+import { Badge } from "lucide-react";
 
 const STATUS_OPTIONS = [
   "Operational",
@@ -68,6 +69,7 @@ const EachService = () => {
     
     newSocket.on("update-services", (data) => {
       console.log("Received update:", data);
+      console.log("dddddddddd",data)
       setServices(data.services); 
       setIsCollaborator(data.isCollaborator || isCollaborator); 
     });
@@ -109,50 +111,88 @@ const EachService = () => {
   useEffect(() => {
     fetchServices();
   }, [orgId]);
+ const SendRequestCollab = async (organizationId, event) => {
+  try {
+    // Prevent default form submission behavior if called from a form
+    if (event) {
+      event.preventDefault();
+    }
+
+    const response = await axios.post(
+      `${BASE_URL}/collaboration/request`,
+      { organizationId },  // Make sure we're only sending the organizationId
+      { withCredentials: true }
+    );
+
+    if (response.data.success) {
+      toast.success("Collaboration request sent successfully");
+      return true;
+    } else {
+      toast.error(response.data.message || "Failed to send request");
+      return false;
+    }
+  } catch (err) {
+    console.error("Request Collaboration Error:", err);
+    toast.error(
+      err.response?.data?.message || "Error sending collaboration request"
+    );
+    return false;
+  }
+};
 
   return (
     <div className="max-w-6xl mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Organization Services</h1>
-        {user?.role === "Admin" && (
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => setOpen(true)}>+ Add Service</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create Service</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div>
-                  <Label htmlFor="serviceName">Service Name</Label>
-                  <Input
-                    id="serviceName"
-                    placeholder="Enter service name"
-                    value={serviceName}
-                    onChange={(e) => setServiceName(e.target.value)}
-                  />
+        <div className="gap-2 ">
+          {user?.role === "Admin" && (
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button onClick={() => setOpen(true)}>+ Add Service</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create Service</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div>
+                    <Label htmlFor="serviceName">Service Name</Label>
+                    <Input
+                      id="serviceName"
+                      placeholder="Enter service name"
+                      value={serviceName}
+                      onChange={(e) => setServiceName(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="serviceStatus">Initial Status</Label>
+                    <select
+                      id="serviceStatus"
+                      value={serviceStatus}
+                      onChange={(e) => setServiceStatus(e.target.value)}
+                      className="w-full p-2 border rounded"
+                    >
+                      {STATUS_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <Button onClick={handleAddService}>Create</Button>
                 </div>
-                <div>
-                  <Label htmlFor="serviceStatus">Initial Status</Label>
-                  <select
-                    id="serviceStatus"
-                    value={serviceStatus}
-                    onChange={(e) => setServiceStatus(e.target.value)}
-                    className="w-full p-2 border rounded"
-                  >
-                    {STATUS_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <Button onClick={handleAddService}>Create</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
+              </DialogContent>
+            </Dialog>
+          )}
+          {!isCollaborator && user?.role !== "Admin" ? (
+            <Button onClick={SendRequestCollab}>Request for Collab</Button>
+          ) : isCollaborator ? (
+            <span>
+              <Badge />
+              Collaborator
+            </span>
+          ) : null}
+        </div>
       </div>
 
       {loading ? (
