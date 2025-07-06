@@ -29,9 +29,9 @@ const Body = () => {
       dispatch(UserLoggedIn(response.data.user));
       if (isAuthRoute) navigate("/");
     } catch (error) {
-      if (error.response?.status === 401 && !isAuthRoute) {
+      
         navigate("/auth");
-      }
+      
     }
   };
 

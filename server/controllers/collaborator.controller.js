@@ -130,19 +130,16 @@ export const getPendingAdminRequests = async (req, res) => {
 
    
     const requests = await CollabRequest.find({
-      status: "pending", 
+      status: "Pending",
     })
-      .populate("userId", "name email") 
+      .populate("userId", "name email")
       .populate("organizationId", "name admin"); 
 
     
-    const filteredRequests = requests.filter(
-      (request) => request.organizationId.admin.toString() !== userId
-    );
-
+  
     return res.status(200).json({
       success: true,
-      requests: filteredRequests,
+      requests,
     });
   } catch (error) {
     console.error("Get Admin Requests Error:", error);
@@ -169,5 +166,90 @@ export const getMyRequests = async (req, res) => {
   } catch (error) {
     console.error("Get My Requests Error:", error);
     res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+export const suspendCollaborator = async (req, res) => {
+  try {
+    const { orgId, userId, reqId } = req.params;
+    const adminId = req.user.id;
+console.log(orgId, userId, adminId);
+    const org = await Organization.findById(orgId);
+    if (!org) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Organization not found" });
+    }
+
+    
+    if (org.admin.toString() !== adminId && req.user.role !== "Admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Only organization admin can suspend collaborators",
+      });
+    }
+
+    const collabRequest=await CollabRequest.findById(reqId);
+    collabRequest.status="Pending"
+await collabRequest.save()
+    org.collaborators = org.collaborators.filter(
+      (collabId) => collabId.toString() !== userId
+    );
+
+    await org.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Collaborator suspended successfully",
+    });
+  } catch (error) {
+    console.error("Suspend Collaborator Error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+export const getActiveCollaborators = async (req, res) => {
+  try {
+    const adminId = req.user.id;
+
+
+    if (req.user.role !== "Admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Only admins can view active collaborators",
+      });
+    }
+
+    
+    const adminOrgs = await Organization.find({ admin: adminId });
+
+    if (adminOrgs.length === 0) {
+      return res.status(200).json({
+        success: true,
+        collaborators: [],
+        message: "No organizations found for this admin",
+      });
+    }
+
+  
+    const orgIds = adminOrgs.map((org) => org._id);
+
+   
+    const activeCollaborators = await CollabRequest.find({
+      organizationId: { $in: orgIds },
+      status: "Accepted",
+    })
+      .populate("userId", "name email") 
+      .populate("organizationId", "name")
+      .sort({ updatedAt: -1 }); 
+
+    return res.status(200).json({
+      success: true,
+      collaborators: activeCollaborators,
+    });
+  } catch (error) {
+    console.error("Get Active Collaborators Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };

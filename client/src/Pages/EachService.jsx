@@ -36,6 +36,7 @@ const EachService = () => {
   const [serviceName, setServiceName] = useState("");
   const [serviceStatus, setServiceStatus] = useState("Operational");
   const [socket, setSocket] = useState(null);
+  const[collabrequest,setCollabRequest]=useState(false)
 
   const fetchServices = async () => {
     try {
@@ -101,7 +102,7 @@ const EachService = () => {
       setServiceName("");
       setServiceStatus("Operational");
       setOpen(false);
-      // No need to call fetchServices() here - socket will handle the update
+     
     } catch (err) {
       toast.error("Failed to add service");
       console.error(err);
@@ -111,26 +112,26 @@ const EachService = () => {
   useEffect(() => {
     fetchServices();
   }, [orgId]);
- const SendRequestCollab = async (organizationId, event) => {
+ const SendRequestCollab = async () => {
   try {
-    // Prevent default form submission behavior if called from a form
-    if (event) {
-      event.preventDefault();
-    }
+    
 
     const response = await axios.post(
-      `${BASE_URL}/collaboration/request`,
-      { organizationId },  // Make sure we're only sending the organizationId
+      `${BASE_URL}/request/send-req`,
+      { organizationId: orgId }, 
       { withCredentials: true }
     );
 
     if (response.data.success) {
       toast.success("Collaboration request sent successfully");
-      return true;
+    
+    
     } else {
+     
       toast.error(response.data.message || "Failed to send request");
-      return false;
+ 
     }
+    setCollabRequest(true);
   } catch (err) {
     console.error("Request Collaboration Error:", err);
     toast.error(
@@ -185,7 +186,7 @@ const EachService = () => {
             </Dialog>
           )}
           {!isCollaborator && user?.role !== "Admin" ? (
-            <Button onClick={SendRequestCollab}>Request for Collab</Button>
+            <Button disabled={collabrequest} onClick={SendRequestCollab}>Request for Collab</Button>
           ) : isCollaborator ? (
             <span>
               <Badge />

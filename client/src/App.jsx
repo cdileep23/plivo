@@ -8,6 +8,7 @@ import appStore from './store/store'
 import { Toaster } from './components/ui/sonner'
 import Services from './Pages/Services'
 import EachService from './Pages/EachService'
+import Request from './Pages/Request'
 
 const App = () => {
   const appRouter=createBrowserRouter([{
@@ -26,6 +27,9 @@ const App = () => {
       },{
         path:'/services/:orgId',
         element:<EachService/>
+      },{
+        path:"/request",
+        element:<Request/>
       }
     ]
   }])

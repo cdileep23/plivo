@@ -1,11 +1,19 @@
-import express from "express"
+import express from "express";
 import { requireAuth } from "../Middleware/AuthMiddlware.js";
-import { getPendingAdminRequests, requestCollaboration, respondToCollabRequest } from "../controllers/collaborator.controller.js";
+import { getActiveCollaborators, getMyRequests, getPendingAdminRequests, requestCollaboration, respondToCollabRequest, suspendCollaborator } from "../controllers/collaborator.controller.js";
 
-const RequestRouter=express.Router()
 
-RequestRouter.route('/send-req').post(requireAuth,requestCollaboration)
-RequestRouter.route('/update-status/:requestId').patch(requireAuth,respondToCollabRequest)
-RequestRouter.route("/get-all-admin").get(requireAuth, getPendingAdminRequests);
+const router = express.Router();
 
-export default RequestRouter
+router.post("/send-req", requireAuth, requestCollaboration);
+router.put("/respond/:requestId", requireAuth, respondToCollabRequest);
+router.get("/admin-requests", requireAuth, getPendingAdminRequests);
+router.get("/my-requests", requireAuth, getMyRequests);
+router.patch(
+  "/organizations/:orgId/suspend/:reqId/:userId",
+  requireAuth,
+  suspendCollaborator
+);
+router.get("/active-collaborators", requireAuth, getActiveCollaborators);
+
+export default router;

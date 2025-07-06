@@ -44,7 +44,11 @@ const Navbar = () => {
       </div>
 
       {/* Right side */}
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center  space-x-2 md:space-x-8">
+        <Link to="/request">
+          <h1 className="font-bold hover:underline">Request</h1>
+        </Link>
+
         {user?.name && (
           <div className="flex items-center gap-2">
             <span className="text-gray-800 dark:text-gray-200 font-medium">
