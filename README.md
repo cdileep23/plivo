@@ -11,7 +11,7 @@ npm install
 Create a .env file in the server directory with the following environment variable:
 
 
-MONGO_URL=mongodb+srv://cdileepkumar22:GnGplxWP8MFX9ey1@cluster0.jazbnfi.mongodb.net/
+MONGO_URL="*********************"
 PORT=4545
 JWT_SECRET=djjoooodeg89g8owdg
 
