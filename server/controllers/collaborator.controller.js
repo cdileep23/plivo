@@ -24,7 +24,7 @@ export const requestCollaboration = async (req, res) => {
         });
     }
 
-    // Check if already a collaborator
+  
     const alreadyCollab = org.collaborators.includes(userId);
     if (alreadyCollab) {
       return res
@@ -32,7 +32,7 @@ export const requestCollaboration = async (req, res) => {
         .json({ success: false, message: "Already a collaborator" });
     }
 
-    // Prevent duplicate pending request
+   
     const existingRequest = await CollabRequest.findOne({
       organizationId,
       userId,

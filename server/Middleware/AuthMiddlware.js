@@ -24,7 +24,7 @@ export const requireAuth = async (req, res, next) => {
         .json({ message: "User not found", success: false });
     }
 
-    req.user = user; // or just decoded if you prefer
+    req.user = user; 
     next();
   } catch (error) {
     console.error("JWT error:", error.message);

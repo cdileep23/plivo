@@ -122,7 +122,7 @@ const Services = () => {
         )}
       </div>
 
-      {/* UI States */}
+      
       {orgs === null ? (
         <div className="flex justify-center items-center h-40">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500" />
@@ -158,7 +158,7 @@ const Services = () => {
                   <Button
                     variant="destructive"
                     onClick={(e) => {
-                      e.preventDefault(); // Prevent navigation on delete
+                      e.preventDefault(); 
                       handleDelete(org._id);
                     }}
                   >

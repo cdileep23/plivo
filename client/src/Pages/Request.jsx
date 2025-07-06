@@ -109,7 +109,7 @@ const Request = () => {
     }
   };
 
-  // Show loading state while checking user or fetching requests
+
   if (!user) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -134,7 +134,7 @@ const Request = () => {
     );
   }
 
-  // Admin view with tabs
+
   if (user.role === "Admin") {
     return (
       <div className="container mx-auto p-4">
@@ -270,7 +270,7 @@ const Request = () => {
     );
   }
 
-  // Regular user view
+ 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">My Requests</h1>

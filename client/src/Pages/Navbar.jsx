@@ -31,7 +31,7 @@ const Navbar = () => {
 
   return (
     <nav className="flex justify-between items-center px-6 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
-      {/* Left side */}
+
       <div className="flex items-center space-x-8">
         <Link
           to="/"
@@ -43,7 +43,7 @@ const Navbar = () => {
         </Link>
       </div>
 
-      {/* Right side */}
+   
       <div className="flex items-center  space-x-2 md:space-x-8">
         <Link to="/request">
           <h1 className="font-bold hover:underline">Request</h1>

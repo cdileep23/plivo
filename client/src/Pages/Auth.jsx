@@ -31,7 +31,7 @@ const Auth = () => {
     name: "",
     email: "",
     password: "",
-    role: "User", // default role
+    role: "User",
   });
 
   const handleInputChange = (e, type) => {
@@ -57,7 +57,7 @@ const Auth = () => {
       if (response.data.success) {
         toast.success(response.data.message);
 
-        // Directly log the user in on both signup and login
+        
         dispatch(UserLoggedIn(response.data.user));
         navigate("/");
       }
@@ -81,7 +81,7 @@ const Auth = () => {
           <TabsTrigger value="login">Login</TabsTrigger>
         </TabsList>
 
-        {/* Sign Up Tab */}
+       
         <TabsContent value="signup">
           <Card>
             <CardHeader>
@@ -164,7 +164,7 @@ const Auth = () => {
           </Card>
         </TabsContent>
 
-        {/* Login Tab */}
+       
         <TabsContent value="login">
           <Card>
             <CardHeader>

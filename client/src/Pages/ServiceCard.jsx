@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -31,6 +30,10 @@ const ServiceCard = ({
   const [editingIncidentId, setEditingIncidentId] = useState(null);
   const [updatedIncidentMessage, setUpdatedIncidentMessage] = useState("");
 
+  useEffect(() => {
+    if (service) setCurrentStatus(service.status);
+  }, [service]);
+
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${BASE_URL}/service/${id}`, {
@@ -42,12 +45,6 @@ const ServiceCard = ({
       toast.error("Delete failed");
     }
   };
-
-  useEffect(()=>{
-if(service){
-  setCurrentStatus(service.status)
-}
-  },[service])
 
   const handleStatusUpdate = async () => {
     setIsUpdatingStatus(true);
@@ -189,7 +186,7 @@ if(service){
                 >
                   {currentStatus}
                 </div>
-                {(userRole === "Admin" || isCollaborator) && (
+                {userRole === "Admin" && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -204,19 +201,19 @@ if(service){
         </div>
 
         <div className="flex gap-2">
+          {userRole === "Admin" && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => handleDelete(service._id)}
+            >
+              <Trash2 size={16} />
+            </Button>
+          )}
           {(userRole === "Admin" || isCollaborator) && (
-            <>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => handleDelete(service._id)}
-              >
-                <Trash2 size={16} />
-              </Button>
-              <Button size="sm" onClick={() => setIncidentDialogOpen(true)}>
-                + Incident
-              </Button>
-            </>
+            <Button size="sm" onClick={() => setIncidentDialogOpen(true)}>
+              + Incident
+            </Button>
           )}
           {service.incidents?.length > 0 && (
             <Button
@@ -262,7 +259,6 @@ if(service){
                           onChange={(e) =>
                             setUpdatedIncidentMessage(e.target.value)
                           }
-                          defaultValue={incident.issueMessage}
                           className="text-sm"
                         />
                         <Button
@@ -330,7 +326,7 @@ if(service){
         </div>
       )}
 
-      {/* Create Incident Dialog */}
+     
       <Dialog open={incidentDialogOpen} onOpenChange={setIncidentDialogOpen}>
         <DialogContent>
           <DialogHeader>

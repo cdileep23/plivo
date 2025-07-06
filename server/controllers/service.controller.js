@@ -156,21 +156,20 @@ export const updateServiceStatus = async (req, res) => {
       });
     }
 
-    // Save the previous status for reference
+  
     const prevStatus = service.status;
     service.status = status;
     await service.save();
 
-    // Handle incidents based on the new status
+   
     if (status === "Operational") {
-      // Resolve all open incidents for this service
+   
       await Incident.updateMany(
         { serviceId, status: "open" },
         { $set: { status: "resolved" } }
       );
     } else if (prevStatus === "Operational") {
-      // Only create new incident if service was previously operational
-      // Check if there are already open incidents
+   
       const existingOpen = await Incident.findOne({
         serviceId,
         status: "open",

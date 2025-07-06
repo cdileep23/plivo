@@ -58,7 +58,7 @@ const EachService = () => {
     if (!user || !orgId) return;
 
     const newSocket = io("http://localhost:4545", {
-      // Use your BASE_URL here
+     
       withCredentials: true,
     });
 
