@@ -17,6 +17,7 @@ import { BASE_URL } from "@/utls/url";
 import ServiceCard from "./ServiceCard";
 import { io } from "socket.io-client";
 import { Badge } from "lucide-react";
+import { createSocketConnection } from "@/lib/socket";
 
 const STATUS_OPTIONS = [
   "Operational",
@@ -57,9 +58,7 @@ const EachService = () => {
   useEffect(() => {
     if (!user || !orgId) return;
 
-    const newSocket = io("https://plivo-gm7c.onrender.com", {
-      withCredentials: true,
-    });
+    const newSocket = createSocketConnection()
 
     newSocket.on("connect", () => {
       console.log("Connected to socket:", newSocket.id);
