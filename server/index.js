@@ -16,7 +16,7 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://plivo-gm7c.onrender.com"],
+    origin: ["http://localhost:5173", "https://plivo-kappa.vercel.app"],
     credentials: true,
   })
 );
