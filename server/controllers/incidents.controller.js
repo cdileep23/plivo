@@ -225,16 +225,10 @@ export const deleteIncident = async (req, res) => {
 
     const isAdmin = org.admin.toString() === userId;
 
-    if (!isAdmin) {
-      return res.status(403).json({
-        success: false,
-        message: "Only Admins can delete incidents",
-      });
-    }
-
+   
     await incident.deleteOne();
 
-    // Recalculate service status
+  
     const remainingOpenIncidents = await Incident.find({
       serviceId: service._id,
       status: "open",
@@ -245,7 +239,6 @@ export const deleteIncident = async (req, res) => {
       await service.save();
     }
 
-    // Broadcast update to all clients in this organization
     const updatedServices = await getServicesWithIncidents(
       service.organizationId
     );
