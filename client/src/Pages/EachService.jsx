@@ -57,8 +57,7 @@ const EachService = () => {
   useEffect(() => {
     if (!user || !orgId) return;
 
-    const newSocket = io("http://localhost:4545", {
-     
+    const newSocket = io("https://plivo-gm7c.onrender.com", {
       withCredentials: true,
     });
 
