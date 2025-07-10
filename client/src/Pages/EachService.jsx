@@ -186,8 +186,8 @@ const EachService = () => {
           {!isCollaborator && user?.role !== "Admin" ? (
             <Button disabled={collabrequest} onClick={SendRequestCollab}>Request for Collab</Button>
           ) : isCollaborator ? (
-            <span>
-              <Badge />
+            <span className="flex gap-6">
+              <Badge className="text-md font-bold" />
               Collaborator
             </span>
           ) : null}
